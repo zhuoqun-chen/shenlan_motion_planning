@@ -7,8 +7,7 @@ clc
 clear all; close all;
 x_I=1; y_I=1;           % 设置初始点
 x_G=700; y_G=700;       % 设置目标点（可尝试修改终点）
-Thr=50;                 % 设置目标点阈值
-Thr = 10;
+Thr=10;                 % 设置目标点阈值
 Delta= 30;              % 设置扩展步长
 %% 建树初始化
 T.v(1).x = x_I;         % T是我们要做的树，v是节点，这里先把起始点加入到T里面来
@@ -36,7 +35,6 @@ for iter = 1:30000
     %提示：用（x_rand(1),x_rand(2)）表示环境中采样点的坐标
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % x_rand = randi([0 800],1,2);
     x_rand(1) = randi([0 xL],1,1);
     x_rand(2) = randi([0 yL],1,1);
     x_sample = x_rand(1);
@@ -59,26 +57,18 @@ for iter = 1:30000
             minimum_dist_idx = i
         end
     end
-    % x_near = T.v(minimum_dist_idx);
     x_near(1) = T.v(minimum_dist_idx).x;
     x_near(2) = T.v(minimum_dist_idx).y;
-
-    parent_node = T.v(minimum_dist_idx);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     x_new=[];
     %Step 3: 扩展得到x_new节点
     %提示：注意使用扩展步长Delta
     
-    %检查节点是否是collision-free
-    %if ~collisionChecking(x_near,x_new,Imp) 
-    %    continue;
-    %end
+    %Step 4: 将x_new插入树T 
+    %提示：新节点x_new的父节点是x_near
 
-
-    % count=count+1;
-
-
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     x_extend_vec = x_rand(1) - x_near(1);
     y_extend_vec = x_rand(2) - x_near(2);
     vec_length = sqrt(x_extend_vec^2 + y_extend_vec^2);
@@ -86,19 +76,7 @@ for iter = 1:30000
     y_direct_vec = y_extend_vec/vec_length;
     x_new(1) = x_near(1) + Delta*x_direct_vec;
     x_new(2) = x_near(2) + Delta*y_direct_vec;
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % x_new.xPrev = x_near.x;
-    % x_new.yPrev = x_near.y;
-    % x_new.dist = mimimum_dist;
-    % if ~collisionChecking(x_near,x_new,Imp)
-    %     continue;
-    % end
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    %Step 4: 将x_new插入树T 
-    %提示：新节点x_new的父节点是x_near
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     if ~collisionChecking(x_near,x_new,Imp)
         continue;
     end
@@ -112,7 +90,7 @@ for iter = 1:30000
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %Step 5:检查是否到达目标点附近 
-    %提示：注意使用目标点阈值Thr，若当前节点和终点的欧式距离小于Thr，则跳出当前for循环
+    %Step 6:将x_near和x_new之间的路径画出来
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     plot([x_near(1) x_new(1)], [x_near(2) x_new(2)]);
@@ -126,14 +104,7 @@ for iter = 1:30000
         break;
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    %Step 6:将x_near和x_new之间的路径画出来
-    %提示 1：使用plot绘制，因为要多次在同一张图上绘制线段，所以每次使用plot后需要接上hold on命令
-    %提示 2：在判断终点条件弹出for循环前，记得把x_near和x_new之间的路径画出来
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    
     pause(0.05); %暂停一会，使得RRT扩展过程容易观察
 end
